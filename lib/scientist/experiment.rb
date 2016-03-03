@@ -211,6 +211,7 @@ module Scientist::Experiment
       block = behaviors[key]
       observations << Scientist::Observation.new(key, self, &block)
     end
+    observations.map(&:conduct)
 
     control = observations.detect { |o| o.name == name }
 

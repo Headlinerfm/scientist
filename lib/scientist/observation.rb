@@ -1,4 +1,5 @@
 # What happened when this named behavior was executed? Immutable.
+require 'concurrent'
 class Scientist::Observation
 
   # The experiment this observation is for
@@ -25,14 +26,20 @@ class Scientist::Observation
     @now        = Time.now
 
     begin
-      @value = block.call
-    rescue Object => e
-      @exception = e
+      @future = Concurrent::Future.execute{ block.call }
     end
 
     @duration = (Time.now - @now).to_f
 
+  end
+
+  def conduct
+    @value = @future.value
+    if @future.rejected?
+      @exception = @future.reason
+    end
     freeze
+    self
   end
 
   # Return a cleaned value suitable for publishing. Uses the experiment's

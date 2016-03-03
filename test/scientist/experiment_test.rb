@@ -176,16 +176,16 @@ describe Scientist::Experiment do
   end
 
   it "knows how to compare two experiments" do
-    a = Scientist::Observation.new(@ex, "a") { 1 }
-    b = Scientist::Observation.new(@ex, "b") { 2 }
+    a = Scientist::Observation.new(@ex, "a") { 1 }.conduct
+    b = Scientist::Observation.new(@ex, "b") { 2 }.conduct
 
     assert @ex.observations_are_equivalent?(a, a)
     refute @ex.observations_are_equivalent?(a, b)
   end
 
   it "uses a compare block to determine if observations are equivalent" do
-    a = Scientist::Observation.new(@ex, "a") { "1" }
-    b = Scientist::Observation.new(@ex, "b") { 1 }
+    a = Scientist::Observation.new(@ex, "a") { "1" }.conduct
+    b = Scientist::Observation.new(@ex, "b") { '1' }.conduct
     @ex.compare { |x, y| x == y.to_s }
     assert @ex.observations_are_equivalent?(a, b)
   end
@@ -291,8 +291,8 @@ describe Scientist::Experiment do
 
   describe "#ignore_mismatched_observation?" do
     before do
-      @a = Scientist::Observation.new(@ex, "a") { 1 }
-      @b = Scientist::Observation.new(@ex, "b") { 2 }
+      @a = Scientist::Observation.new(@ex, "a") { 1 }.conduct
+      @b = Scientist::Observation.new(@ex, "b") { 2 }.conduct
     end
 
     it "does not ignore an observation if no ignores are configured" do
